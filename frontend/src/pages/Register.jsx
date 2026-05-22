@@ -1,9 +1,7 @@
 import { useState } from "react"
 import { useNavigate, Link } from "react-router-dom"
 import { authService } from "../services/authService"
-import {
-  validateEmail,
-} from "../utils/validation"
+
 import Toast from '../components/Toast'
 import Loading from '../components/Loading'
 
@@ -24,8 +22,7 @@ const Register = () => {
     if (!name.trim()) errors.name = 'Name is required'
     else if (name.length < 2) errors.name = 'Name must be at least 2 characters'
 
-    if (!email) errors.email = 'Email is required'
-    else if (!validateEmail(email)) errors.email = 'Invalid email'
+   
 
     if (!password) errors.password = 'Password is required'
     else if (password.length < 6)
@@ -80,88 +77,88 @@ const Register = () => {
         <form className='space-y-5' onSubmit={handleSubmit} noValidate>
           {/* Name */}
           <div>
-            <label htmlFor='register-name' className='block text-sm font-medium'>Full Name</label>
+            <label htmlFor="register-name" className="block text-sm font-medium">Full Name</label>
             <input
-              id='register-name'
-              name='name'
-              className='mt-1 w-full border rounded-lg px-3 py-2'
+              id="register-name"
+              name="name"
+              className="mt-1 w-full border rounded-lg px-3 py-2"
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
             {fieldErrors.name && (
-              <p className='text-sm text-red-600'>{fieldErrors.name}</p>
+              <p className="text-sm text-red-600">{fieldErrors.name}</p>
             )}
           </div>
 
           {/* Email */}
           <div>
-            <label htmlFor='register-email' className='block text-sm font-medium'>Email</label>
+            <label htmlFor="register-email" className="block text-sm font-medium">Email</label>
             <input
-              id='register-email'
-              name='email'
-              type='email'
-              className='mt-1 w-full border rounded-lg px-3 py-2'
+              id="register-email"
+              name="email"
+              type="email"
+              className="mt-1 w-full border rounded-lg px-3 py-2"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
             {fieldErrors.email && (
-              <p className='text-sm text-red-600'>{fieldErrors.email}</p>
+              <p className="text-sm text-red-600">{fieldErrors.email}</p>
             )}
           </div>
 
           {/* Password */}
           <div>
-            <label htmlFor='register-password' className='block text-sm font-medium'>Password</label>
+            <label htmlFor="register-password" className="block text-sm font-medium">Password</label>
             <input
-              id='register-password'
-              name='password'
-              type='password'
-              className='mt-1 w-full border rounded-lg px-3 py-2'
+              id="register-password"
+              name="password"
+              type="password"
+              className="mt-1 w-full border rounded-lg px-3 py-2"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
 
             {fieldErrors.password && (
-              <p className='text-sm text-red-600'>{fieldErrors.password}</p>
+              <p className="text-sm text-red-600">{fieldErrors.password}</p>
             )}
           </div>
 
           {/* Confirm Password */}
           <div>
-            <label htmlFor='register-confirm-password' className='block text-sm font-medium'>Confirm Password</label>
+            <label htmlFor="register-confirm-password" className="block text-sm font-medium">Confirm Password</label>
             <input
-              id='register-confirm-password'
-              name='confirm-password'
-              type='password'
-              className='mt-1 w-full border rounded-lg px-3 py-2'
+              id="register-confirm-password"
+              name="confirm-password"
+              type="password"
+              className="mt-1 w-full border rounded-lg px-3 py-2"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
             />
             {fieldErrors.confirmPassword && (
-              <p className='text-sm text-red-600'>
+              <p className="text-sm text-red-600">
                 {fieldErrors.confirmPassword}
               </p>
             )}
           </div>
 
           <button
-            type='submit'
+            type="submit"
             disabled={loading}
-            className='w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50'
+            className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
           >
-            {loading ? 'Creating account...' : 'Register'}
+            {loading ? "Creating account..." : "Register"}
           </button>
         </form>
 
-        <p className='text-center text-sm text-gray-600 mt-6'>
-          Already have an account?{' '}
-          <Link to='/login' className='text-blue-600 font-medium'>
+        <p className="text-center text-sm text-gray-600 mt-6">
+          Already have an account?{" "}
+          <Link to="/login" className="text-blue-600 font-medium">
             Sign in
           </Link>
         </p>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Register
+export default Register;
