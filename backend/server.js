@@ -1,23 +1,25 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import dns from 'dns'
-
-dns.setDefaultResultOrder('ipv4first')
+import connectDB from "./config/db.js";
 
 dotenv.config();
+
+await connectDB();
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("Connectify API Running...");
-});
+const PORT = process.env.PORT 
 
-const PORT = process.env.PORT || 5000;
+//global error hander
+app.use((err, req, res, next) => {
+    const statusCode = err.statusCode || 500
+    res.status(statusCode).json({success : false, message : err.message  || 'internal server error'})
+})
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+    console.log(`server is running on port:${PORT}`)
+})
