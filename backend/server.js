@@ -1,31 +1,38 @@
 import express from 'express'
-import cors from 'cors'
-import dotenv from 'dotenv'
+import 'dotenv/config'
 import connectDB from './config/db.js'
 import router from './routes/authRoutes.js'
+import postRoutes from './routes/postRoutes.js'
+import cors from 'cors'
 
-dotenv.config();
+const app = express()
 
-await connectDB();
+app.use(cors({
+    origin: 'http://localhost:5173',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true 
+}))
 
-const app = express();
+app.use(express.json())
 
-app.use(cors());
-app.use(express.json());
+const PORT = process.env.PORT 
 
-const PORT = process.env.PORT || 5000
+// CONNECT DB
+connectDB()
 
+// ROUTES
 app.get('/', (req, res) => {
     res.send("backend running properly")
 })
 app.use('/api/auth', router)
+app.use('/api/posts', postRoutes)
 
-//global error hander
+//global error handler
 app.use((err, req, res, next) => {
-    const statusCode = err.statusCode || 500
-    res.status(statusCode).json({success : false, message : err.message  || 'internal server error'})
+    console.log("error", err)
+    res.status(err.statusCode || 500).json({success : false, message : err.message || "internal server error"})
 })
 
 app.listen(PORT, () => {
-    console.log(`server is running on port:${PORT}`)
+    console.log(`backend is running on port ${PORT}`)
 })

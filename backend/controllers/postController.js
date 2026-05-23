@@ -1,0 +1,149 @@
+import Post from "../models/Post.js";
+import {asyncHandler} from '../middleware/asynchandler.js'
+import mongoose from "mongoose";
+
+export const createPost = asyncHandler(async(req,res) => {
+    const {content} = req.body
+    if(!content){
+        const error = new Error('content is required')
+        error.statusCode = 400;
+        throw error;
+    }
+    const post = new Post({content, author : req.user.id})
+
+    await post.save()
+
+    res.status(200).json({success : true, message : 'post created successsfully'})
+})
+
+export const getPosts = asyncHandler(async(req,res) => {
+    const page = Number(req.query.page) || 1;
+    const limit = 10;
+    const skip = (page - 1) * limit;
+
+    const posts = await Post.find() //all post
+        .sort({createdAt  : -1}) //newest post (descending order)
+        .skip(skip) //skip some post based on page number
+        .limit(limit) //only limited page returns
+        .populate("author", "_id name email") //returns id, name, email
+        .populate({path : "comments.user", select : "_id name email"})
+
+    const totalPosts = await Post.countDocuments();
+
+    res.status(200).json({success : true, page, totalpages : Math.ceil(totalPosts / limit), totalPosts, posts})
+})
+
+export const likePost = asyncHandler(async(req, res) =>{
+    const {postId} = req.params
+    const userId = req.user.id
+    const post = await Post.findById(postId)
+    if(!post){
+        const error = new Error('post not found')
+        error.statusCode = 404
+        throw error
+    }
+    const isLiked = post.likes.includes(userId)
+    const update = isLiked ? {$pull : {likes : userId}} : {$addToSet : {likes : userId}}
+
+    const updatePost = await Post.findByIdAndUpdate(postId, update, {new : true})
+
+    const populatedPost = await Post.findById(postId)
+      .populate("author", "_id name email")
+      .populate({path : "comments.user", select : "_id name email"})
+
+    res.status(200).json({success : true, message : 'like updated successfully', post : populatedPost})
+})
+
+export const addComment = asyncHandler(async(req, res) => {
+    const {postId} = req.params
+    const {text} = req.body
+    const userId = req.user.id
+
+    if(!mongoose.Types.ObjectId.isValid(postId)){
+        const error = new Error("invalid post ID")
+        error.statusCode = 400
+        throw error
+    }
+
+    if(!text || !text.trim()){
+        const error = new Error('comment text is required')
+        error.statusCode = 400
+        throw error
+    }
+
+    const updatePost = await Post.findByIdAndUpdate(postId,{
+        $push : {comments : {text, user: userId}}
+    }, { new :  true}) //return updated document
+
+    if(!updatePost){
+        const error = new Error('post not found')
+        error.statusCode = 404
+        throw error
+    }
+
+    res.status(201).json({success : true, message : "comment added successfully", commentsCount : updatePost.comments.length})
+})
+
+export const updatePost = asyncHandler(async(req, res) => {
+    const {postId} = req.params
+    const {content} = req.body
+    const userId = req.user.id
+
+    if(!mongoose.Types.ObjectId.isValid(postId)){
+        const error = new Error('invalid post ID')
+        error.statusCode = 400
+        throw error
+    }
+
+    if(!content || !content.trim()){
+        const error = new Error('content is required')
+        error.statusCode = 400
+        throw error
+    }
+
+    const post = await Post.findById(postId)
+    if(!post){
+        const error = new Error('post not found')
+        error.statusCode = 404
+        throw error
+    }
+
+    if(post.author.toString() !== userId){
+        const error = new Error('you are not authorized to update this post')
+        error.statusCode = 403
+        throw error
+    }
+
+    post.content = content.trim()
+    await post.save()
+
+    res.status(200).json({success : true, message : "post updated successfully",})
+
+})
+
+export const deletePost = asyncHandler(async(req, res) => {
+    const {postId}  = req.params;
+    const userId = req.user.id;
+
+    if(!mongoose.Types.ObjectId.isValid(postId)){
+        const error = new Error('invalid post ID')
+        error.statusCode = 400
+        throw error
+    }
+
+    const post = await Post.findById(postId)
+    if(!post){
+        const error = new Error("post not found")
+        error.statusCode = 404
+        throw error
+    }
+
+    if(post.author.toString() !== userId){
+        const error = new Error('you are not authorized to  delete this post')
+        error.statusCode = 403
+        throw error
+    }
+    await post.deleteOne()
+
+    res.status(200).json({success : true, message : "post deleted successfully"})
+})
