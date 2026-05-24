@@ -1,9 +1,13 @@
 import express from 'express'
-import { registerUser, loginUser } from '../controllers/authController.js'
+import { loginUser, registerUser, getUserProfile, updateUser, deleteUser } from '../controllers/authController.js'
+import { verifyToken } from '../middleware/authMiddleware.js'
 
-const router = express.Router();
+const router = express.Router()
 
-router.post('/register', registerUser);
-router.post('/login', loginUser);
+router.post('/register',registerUser)
+router.post('/login',loginUser)
+router.get('/profile', verifyToken, getUserProfile)
+router.put('/update', verifyToken, updateUser)
+router.delete('/delete', verifyToken, deleteUser)
 
-export default router
+export default router;
