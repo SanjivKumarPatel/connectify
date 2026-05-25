@@ -10,4 +10,4 @@ router.get('/profile', verifyToken, getUserProfile)
 router.put('/update', verifyToken, updateUser)
 router.delete('/delete', verifyToken, deleteUser)
 
-export default router;
+export default router

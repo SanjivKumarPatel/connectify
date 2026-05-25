@@ -18,7 +18,7 @@ app.use(express.json())
 const PORT = process.env.PORT 
 
 // CONNECT DB
-connectDB()
+await connectDB()
 
 // ROUTES
 app.get('/', (req, res) => {

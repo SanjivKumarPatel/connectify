@@ -1,12 +1,12 @@
-import User from "../models/User.js";
-import generateToken from "../utils/generateToken.js";
-import Post from "../models/Post.js";
-import { asyncHandler } from "../middleware/asynchandler.js";
-import bcrypt from "bcryptjs";
+import User from '../models/User.js'
+import generateToken from '../utils/generateToken.js'
+import Post from '../models/Post.js'
+import { asyncHandler } from '../middleware/asynchandler.js'
+import bcrypt from 'bcryptjs'
 
 
 export const registerUser = asyncHandler(async(req, res) => {
-    const {name, email, password} = req.body;
+    const {name, email, password} = req.body
     if(!name || !email || !password){
         const error = new Error('all fields are required')
         error.statusCode = 400
@@ -75,7 +75,7 @@ export const loginUser = asyncHandler(async(req, res) => {
 
 export const getUserProfile = asyncHandler(async(req, res) =>{
     const userId = req.user.id
-    const user = await User.findById(userId).select("-password")
+    const user = await User.findById(userId).select('-password')
     if(!user){
         const error = new Error('user not found')
         error.statusCode = 404
@@ -131,7 +131,7 @@ export const deleteUser  = asyncHandler(async(req, res) => {
         throw error
     }
 
-    await Post.deleteMany({author : userId}) //delete post also that are created by the user 
+    await Post.deleteMany({author : userId}) 
     
     res.status(200).json({success : true, message : 'user deleted successfully'})
 })

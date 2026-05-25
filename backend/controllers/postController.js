@@ -1,6 +1,6 @@
-import Post from "../models/Post.js";
+import Post from '../models/Post.js'
 import {asyncHandler} from '../middleware/asynchandler.js'
-import mongoose from "mongoose";
+import mongoose from 'mongoose'
 
 export const createPost = asyncHandler(async(req,res) => {
     const {content} = req.body
@@ -21,12 +21,12 @@ export const getPosts = asyncHandler(async(req,res) => {
     const limit = 10;
     const skip = (page - 1) * limit;
 
-    const posts = await Post.find() //all post
-        .sort({createdAt  : -1}) //newest post (descending order)
-        .skip(skip) //skip some post based on page number
-        .limit(limit) //only limited page returns
-        .populate("author", "_id name email") //returns id, name, email
-        .populate({path : "comments.user", select : "_id name email"})
+    const posts = await Post.find() 
+        .sort({createdAt  : -1}) 
+        .skip(skip) 
+        .limit(limit) 
+        .populate('author', '_id name email')
+        .populate({path : 'comments.user', select : '_id name email'})
 
     const totalPosts = await Post.countDocuments();
 
@@ -48,8 +48,8 @@ export const likePost = asyncHandler(async(req, res) =>{
     const updatePost = await Post.findByIdAndUpdate(postId, update, {new : true})
 
     const populatedPost = await Post.findById(postId)
-      .populate("author", "_id name email")
-      .populate({path : "comments.user", select : "_id name email"})
+      .populate('author', '_id name email')
+      .populate({path : 'comments.user', select : '_id name email'})
 
     res.status(200).json({success : true, message : 'like updated successfully', post : populatedPost})
 })
@@ -60,7 +60,7 @@ export const addComment = asyncHandler(async(req, res) => {
     const userId = req.user.id
 
     if(!mongoose.Types.ObjectId.isValid(postId)){
-        const error = new Error("invalid post ID")
+        const error = new Error('invalid post ID')
         error.statusCode = 400
         throw error
     }
@@ -81,7 +81,7 @@ export const addComment = asyncHandler(async(req, res) => {
         throw error
     }
 
-    res.status(201).json({success : true, message : "comment added successfully", commentsCount : updatePost.comments.length})
+    res.status(201).json({success : true, message : 'comment added successfully', commentsCount : updatePost.comments.length})
 })
 
 export const updatePost = asyncHandler(async(req, res) => {
@@ -117,7 +117,7 @@ export const updatePost = asyncHandler(async(req, res) => {
     post.content = content.trim()
     await post.save()
 
-    res.status(200).json({success : true, message : "post updated successfully",})
+    res.status(200).json({success : true, message : 'post updated successfully',})
 
 })
 
@@ -133,7 +133,7 @@ export const deletePost = asyncHandler(async(req, res) => {
 
     const post = await Post.findById(postId)
     if(!post){
-        const error = new Error("post not found")
+        const error = new Error('post not found')
         error.statusCode = 404
         throw error
     }
@@ -145,5 +145,5 @@ export const deletePost = asyncHandler(async(req, res) => {
     }
     await post.deleteOne()
 
-    res.status(200).json({success : true, message : "post deleted successfully"})
+    res.status(200).json({success : true, message : 'post deleted successfully'})
 })
