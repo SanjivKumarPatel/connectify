@@ -3,6 +3,7 @@ import 'dotenv/config'
 import connectDB from './config/db.js'
 import router from './routes/authRoutes.js'
 import postRoutes from './routes/postRoutes.js'
+import aiRouter from './routes/aiRoutes.js'
 import cors from 'cors'
 
 const app = express()
@@ -20,17 +21,15 @@ app.use(express.json())
 
 const PORT = process.env.PORT || 5000
 
-// CONNECT DB
 await connectDB()
 
-// ROUTES
 app.get('/', (req, res) => {
     res.send("backend running properly")
 })
 app.use('/api/auth', router)
 app.use('/api/posts', postRoutes)
+app.use('/api/ai', aiRouter)
 
-//global error handler
 app.use((err, req, res, next) => {
     console.log("error", err)
     res.status(err.statusCode || 500).json({success : false, message : err.message || "internal server error"})
