@@ -105,7 +105,7 @@ const UserProfile = () => {
   }
 
   return (
-    <div className='min-h-screen bg-gray-50'>
+    <div className='min-h-screen bg-gray-500'>
       <Navbar />
 
       {toast && (
