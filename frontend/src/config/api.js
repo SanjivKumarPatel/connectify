@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: 'https://connectify-backend-65zs.onrender.com',
+  baseURL: 'https://connectify-backend-65zs.onrender.com/api',
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
