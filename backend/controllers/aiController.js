@@ -26,7 +26,8 @@ export const rewritePost = asyncHandler(async (req, res) => {
       messages: [
         {
           role: 'system',
-          content: 'Rewrite the post to make it clearer, grammatically correct, natural, and engaging. Keep the original meaning and return only the rewritten post.'
+          content:
+            'Rewrite the post to make it clearer, grammatically correct, natural, and engaging. Keep the original meaning and return only the rewritten post.'
         },
         {
           role: 'user',
