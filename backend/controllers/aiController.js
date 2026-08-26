@@ -1,7 +1,9 @@
 import { asyncHandler } from '../middleware/asynchandler.js'
-import { HfInference } from '@huggingface/inference'
+import Groq from 'groq-sdk'
 
-const hf = new HfInference(process.env.HF_TOKEN)
+const groq = new Groq({
+  apiKey: process.env.GROQ_API_KEY
+})
 
 export const rewritePost = asyncHandler(async (req, res) => {
   const { content } = req.body
@@ -19,18 +21,22 @@ export const rewritePost = asyncHandler(async (req, res) => {
   }
 
   try {
-    const response = await hf.chatCompletion({
-      model: "Qwen/Qwen2.5-7B-Instruct",
+    const response = await groq.chat.completions.create({
+      model: 'openai/gpt-oss-20b',
       messages: [
         {
-          role: "user",
-          content: `rewrite this social media post clearly and engagingly without changing its meaning:\n\n${content.trim()}`
+          role: 'system',
+          content:
+            'Rewrite the post to make it clearer, grammatically correct, natural, and engaging. Keep the original meaning and return only the rewritten post.'
+        },
+        {
+          role: 'user',
+          content: content.trim()
         }
       ],
-      max_tokens: 150,
+      max_completion_tokens: 150,
+      reasoning_effort: 'low'
     })
-
-    console.log("HF RESPONSE:", response)
 
     const rewritten = response?.choices?.[0]?.message?.content
 
@@ -42,17 +48,10 @@ export const rewritePost = asyncHandler(async (req, res) => {
 
     res.status(200).json({
       success: true,
-      rewrittenContent: rewritten
+      rewrittenContent: rewritten.trim()
     })
-
   } catch (error) {
-    console.log("================================")
-    console.log("HF ERROR DETAILS:")
-    console.log(error.httpResponse?.body)
-    console.log(error)
-    console.log("================================")
-
-    error.statusCode = 500
+    error.statusCode = error.status || 500
     throw error
   }
 })

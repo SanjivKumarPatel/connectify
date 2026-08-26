@@ -5,21 +5,26 @@ import { asyncHandler } from '../middleware/asynchandler.js'
 import bcrypt from 'bcryptjs'
 
 
-export const registerUser = asyncHandler(async(req, res) => {
-    const {name, email, password} = req.body
-    if(!name || !email || !password){
+export const registerUser = asyncHandler(async (req, res) => {
+    const { name, email, password } = req.body
+
+    if (!name || !email || !password) {
         const error = new Error('all fields are required')
         error.statusCode = 400
         throw error
     }
-    if(password.length < 6){
+
+    if (password.length < 6) {
         const error = new Error('password must be atleast 6 characters')
         error.statusCode = 400
         throw error
     }
 
-    const existed = await User.findOne({email})
-    if(existed){
+    const normalizedEmail = email.toLowerCase().trim()
+
+    const existed = await User.findOne({ email: normalizedEmail })
+
+    if (existed) {
         const error = new Error('user already existed')
         error.statusCode = 400
         throw error
@@ -27,13 +32,19 @@ export const registerUser = asyncHandler(async(req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10)
 
-    const user = await User.create({name, email, password : hashedPassword})
+    const user = await User.create({
+        name: name.trim(),
+        email: normalizedEmail,
+        password: hashedPassword
+    })
 
-    res.status(201).json({success : true, message : 'user created successfully', 
-        user : {
-            _id : user._id,
-            name : user.name,
-            email : user.email,
+    res.status(201).json({
+        success: true,
+        message: 'user created successfully',
+        user: {
+            _id: user._id,
+            name: user.name,
+            email: user.email
         }
     })
 })
@@ -46,7 +57,7 @@ export const loginUser = asyncHandler(async(req, res) => {
         throw error
     }
 
-    const normalizedEmail = email.toLowerCase();
+    const normalizedEmail = email.toLowerCase().trim()
     const user = await User.findOne({email : normalizedEmail})
     if(!user){
         const error = new Error('invalid email or password')
@@ -95,8 +106,8 @@ export const updateUser = asyncHandler(async(req, res) =>{
         throw error
     }
 
-    if(email && email.toLowerCase() !== user.email){
-        const normalizedEmail = email.toLowerCase()
+    if(email && email.toLowerCase().trim() !== user.email){
+        const normalizedEmail = email.toLowerCase().trim()
 
         const existingUser = await User.findOne({email : normalizedEmail})
         if(existingUser){

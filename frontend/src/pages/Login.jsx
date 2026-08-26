@@ -62,7 +62,7 @@ const Login = () => {
   if (loading) return <Loading text='Signing in...' />
 
   return (
-    <div className='min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8'>
+    <div className='min-h-screen bg-gradient-to-br from-purple-600 to-indigo-300 flex flex-col items-center justify-center p-4 sm:p-6'>
       {toast && (
         <Toast
           message={toast.message}
