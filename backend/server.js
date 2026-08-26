@@ -11,7 +11,6 @@ const app = express()
 app.use(cors({
   origin: [
     'http://localhost:5173',
-    'https://connectify-7gg51jxnr-sanjiv-kumar-patels-projects.vercel.app'
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
